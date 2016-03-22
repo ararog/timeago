@@ -17,30 +17,31 @@ const (
     YearsAgo
 )
 
-
-// Reverse returns its argument string reversed rune-wise left to right.
-func TimeAgo(start Time, end Time) string {
+func TimeAgo(start time.Time, end time.Time) string {
 
   duration := start.Sub(end)
 
   if duration.Hours() < 24 {
     if duration.Hours() >= 1 {
-      return localizedStringFor(HoursAgo, duration.Hours());
+      return localizedStringFor(HoursAgo, int(duration.Hours()));
     } else if duration.Minutes() >= 1 {
-      return localizedStringFor(MinutesAgo, duration.Minutes());
+      return localizedStringFor(MinutesAgo, int(duration.Minutes()));
     } else {
-      return localizedStringFor(SecondsAgo, duration.Seconds());
+      return localizedStringFor(SecondsAgo, int(duration.Seconds()));
     }
-  }
-  else {
+  } else {
     if duration.Hours() >= 8760 {
-        return localizedStringFor(YearsAgo, difference.year);
+      years := duration.Hours() / 8760
+      return localizedStringFor(YearsAgo, int(years));
     } else if duration.Hours() >= 730 {
-        return localizedStringFor(MonthsAgo, difference.month);
+      months := duration.Hours() / 730
+      return localizedStringFor(MonthsAgo, int(months));
     } else if duration.Hours() >= 168 {
-        return localizedStringFor(WeeksAgo, difference.weekOfYear);
+      weeks := duration.Hours() / 168
+      return localizedStringFor(WeeksAgo, int(weeks));
     } else {
-        return localizedStringFor(DaysAgo, difference.day);
+      days := duration.Hours() / 24
+      return localizedStringFor(DaysAgo, int(days));
     }
   }
 }
@@ -50,46 +51,46 @@ func localizedStringFor(valueType DateAgoValues, value int) string {
     switch valueType {
         case YearsAgo:
             if value >= 2 {
-                return fmt.Sprintf("%%d %@years ago", value);
+                return fmt.Sprintf("%d years ago", value);
             } else {
                 return "Last year";
             }
         case MonthsAgo:
             if value >= 2 {
-                return fmt.Sprintf("%%d %@months ago", value);
+                return fmt.Sprintf("%d months ago", value);
             } else {
                 return "Last month";
             }
         case WeeksAgo:
             if value >= 2 {
-                return fmt.Sprintf("%%d %@weeks ago", value);
+                return fmt.Sprintf("%d weeks ago", value);
             } else {
                 return "Last week";
             }
         case DaysAgo:
             if value >= 2 {
-                return fmt.Sprintf("%%d %@days ago", value);
+                return fmt.Sprintf("%d days ago", value);
             } else {
                 return "Yesterday";
             }
         case HoursAgo:
             if value >= 2 {
-                return fmt.Sprintf("%%d %@hours ago", value);
+                return fmt.Sprintf("%d hours ago", value);
             } else {
                 return "An hour ago";
             }
         case MinutesAgo:
             if value >= 2 {
-                return fmt.Sprintf("%%d %@minutes ago", value);
+                return fmt.Sprintf("%d minutes ago", value);
             } else {
                 return "A minute ago";
             }
         case SecondsAgo:
             if value >= 2 {
-                return fmt.Sprintf("%%d %@seconds ago", value);
+                return fmt.Sprintf("%d seconds ago", value);
             } else {
                 return "Just now";
             }
     }
-    return nil;
+    return "";
 }
