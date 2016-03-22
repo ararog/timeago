@@ -15,16 +15,37 @@ func check(t *testing.T, d time.Duration, result string) {
   }
 }
 
-func TestHourAgo(t *testing.T) {
+func TestThreeHoursAgo(t *testing.T) {
+  d, error := time.ParseDuration("-3h")
+  if error == nil {
+    check(t, d, "3 hours ago")
+  }
+}
+
+func TestAnHourAgo(t *testing.T) {
   d, error := time.ParseDuration("-1.5h")
   if error == nil {
     check(t, d, "An hour ago")
   }
 }
 
-func TestMinuteAgo(t *testing.T) {
+func TestThreeMinutesAgo(t *testing.T) {
+  d, error := time.ParseDuration("-3m")
+  if error == nil {
+    check(t, d, "3 minutes ago")
+  }
+}
+
+func TestAMinuteAgo(t *testing.T) {
   d, error := time.ParseDuration("-1.2m")
   if error == nil {
     check(t, d, "A minute ago")
+  }
+}
+
+func TestJustNow(t *testing.T) {
+  d, error := time.ParseDuration("-1.2s")
+  if error == nil {
+    check(t, d, "Just now")
   }
 }

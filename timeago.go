@@ -3,6 +3,7 @@ package timeago
 import (
 	"time"
   "fmt"
+  "math"
 )
 
 type DateAgoValues int
@@ -23,11 +24,11 @@ func TimeAgo(start time.Time, end time.Time) string {
 
   if duration.Hours() < 24 {
     if duration.Hours() >= 1 {
-      return localizedStringFor(HoursAgo, int(duration.Hours()));
+      return localizedStringFor(HoursAgo, int(round(duration.Hours())));
     } else if duration.Minutes() >= 1 {
-      return localizedStringFor(MinutesAgo, int(duration.Minutes()));
+      return localizedStringFor(MinutesAgo, int(round(duration.Minutes())));
     } else {
-      return localizedStringFor(SecondsAgo, int(duration.Seconds()));
+      return localizedStringFor(SecondsAgo, int(round(duration.Seconds())));
     }
   } else {
     if duration.Hours() >= 8760 {
@@ -44,6 +45,10 @@ func TimeAgo(start time.Time, end time.Time) string {
       return localizedStringFor(DaysAgo, int(days));
     }
   }
+}
+
+func round(f float64) float64 {
+    return math.Floor(f + .5)
 }
 
 func localizedStringFor(valueType DateAgoValues, value int) string {
