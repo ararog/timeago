@@ -21,75 +21,129 @@ const (
 
 func TimeAgoFromNow(args ...interface{}) (string, error) {
 	if len(args) == 1 {
-		return timeAgoFromNowWithTime(args[0])
+		param, ok := args[0].(time.Time)
+		if ! ok {
+			return "", errors.New("Invalid parameter type: end")
+		}
+		return timeAgoFromNowWithTime(param)
+	} else if len(args) == 2 {
+		paramLayout, ok := args[0].(string)
+		if ! ok{
+			err := errors.New("Invalid parameter type: layout")
+			return "", err
+		}
+
+		paramEnd, ok := args[1].(string)
+		if ! ok{
+			err := errors.New("Invalid parameter type: end")
+			return "", err
+		}
+		return timeAgoFromNowWithString(paramLayout, paramEnd)
 	} else {
-		return timeAgoFromNowWithString(args[0], args[1])
+		return "", errors.New("Invalid number of arguments")
 	}
 }
 
-func timeAgoFromNowWithTime(end interface{}) (string, error) {
-	param, ok := end.(time.Time)
-	if ok {
-		result := TimeAgo(time.Now(), param)
-		return result, nil
-	} else {
-		err := errors.New("Invalid parameter type: end")
-		return "", err
-	}
+func timeAgoFromNowWithTime(end time.Time) (string, error) {
+
+	return TimeAgo(time.Now(), end)
 }
 
 func timeAgoFromNowWithString(
-	layout interface{}, end interface{}) (string, error) {
+	layout, end string) (string, error) {
 
-	paramLayout, ok := layout.(string)
-	if ! ok{
-		err := errors.New("Invalid parameter type: layout")
-		return "", err
-	}
-
-	paramEnd, ok := end.(string)
-	if ! ok{
-		err := errors.New("Invalid parameter type: end")
-		return "", err
-	}
-
-	t, e := time.Parse(paramLayout, paramEnd)
+	t, e := time.Parse(layout, end)
 	if e == nil {
-		result := TimeAgo(time.Now(), t)
-		return result, nil
+		return TimeAgo(time.Now(), t)
 	} else {
 		err := errors.New("Invalid format")
 		return "", err
 	}
 }
 
-func TimeAgo(start, end time.Time) string {
+func TimeAgo(args ...interface{}) (string, error) {
 
-  duration := start.Sub(end)
+	if len(args) == 2 {
+		paramStart, ok := args[0].(time.Time)
+		if ! ok {
+			return "", errors.New("Invalid parameter type: start")
+		}
 
-  if duration.Hours() < 24 {
-    if duration.Hours() >= 1 {
-      return localizedStringFor(HoursAgo, int(round(duration.Hours())));
-    } else if duration.Minutes() >= 1 {
-      return localizedStringFor(MinutesAgo, int(round(duration.Minutes())));
-    } else {
-      return localizedStringFor(SecondsAgo, int(round(duration.Seconds())));
-    }
-  } else {
-    if duration.Hours() >= 8760 {
-      years := duration.Hours() / 8760
-      return localizedStringFor(YearsAgo, int(years));
-    } else if duration.Hours() >= 730 {
-      months := duration.Hours() / 730
-      return localizedStringFor(MonthsAgo, int(months));
-    } else if duration.Hours() >= 168 {
-      weeks := duration.Hours() / 168
-      return localizedStringFor(WeeksAgo, int(weeks));
-    } else {
-      days := duration.Hours() / 24
-      return localizedStringFor(DaysAgo, int(days));
-    }
-  }
+		paramEnd, ok := args[1].(time.Time)
+		if ! ok {
+			return "", errors.New("Invalid parameter type: end")
+		}
+		return timeAgoWithTime(paramStart, paramEnd)
+	} else if len(args) == 3 {
+		paramLayout, ok := args[0].(string)
+		if ! ok{
+			err := errors.New("Invalid parameter type: layout")
+			return "", err
+		}
+
+		paramStart, ok := args[1].(string)
+		if ! ok{
+			err := errors.New("Invalid parameter type: start")
+			return "", err
+		}
+
+		paramEnd, ok := args[2].(string)
+		if ! ok {
+			return "", errors.New("Invalid parameter type: end")
+		}
+		return timeAgoWithString(paramLayout, paramStart, paramEnd)
+	} else {
+		return "", errors.New("Invalid number of arguments")
+	}
+}
+
+func timeAgoWithTime(start, end time.Time) (string, error) {
+	duration := start.Sub(end)
+	return stringForDuration(duration), nil
+}
+
+func timeAgoWithString(layout, start, end string) (string, error) {
+
+	timeStart, e := time.Parse(layout, start)
+	if e != nil {
+		err := errors.New("Invalid start time format")
+		return "", err
+	}
+
+	timeEnd, e := time.Parse(layout, end)
+	if e != nil {
+		err := errors.New("Invalid end time format")
+		return "", err
+	}
+
+	duration := timeStart.Sub(timeEnd)
+	return stringForDuration(duration), nil
+}
+
+func stringForDuration(duration time.Duration) string {
+	if duration.Hours() < 24 {
+		if duration.Hours() >= 1 {
+			return localizedStringFor(HoursAgo, int(round(duration.Hours())));
+		} else if duration.Minutes() >= 1 {
+			return localizedStringFor(MinutesAgo, int(round(duration.Minutes())));
+		} else {
+			return localizedStringFor(SecondsAgo, int(round(duration.Seconds())));
+		}
+	} else {
+		if duration.Hours() >= 8760 {
+			years := duration.Hours() / 8760
+			return localizedStringFor(YearsAgo, int(years));
+		} else if duration.Hours() >= 730 {
+			months := duration.Hours() / 730
+			return localizedStringFor(MonthsAgo, int(months));
+		} else if duration.Hours() >= 168 {
+			weeks := duration.Hours() / 168
+			return localizedStringFor(WeeksAgo, int(weeks));
+		} else {
+			days := duration.Hours() / 24
+			return localizedStringFor(DaysAgo, int(days));
+		}
+	}
 }
 
 func round(f float64) float64 {
