@@ -11,6 +11,7 @@ two dates, this library is mainly based on time type of go.
 ```golang
 import (
   "fmt"
+  "time"
   timeago "github.com/ararog/timeago"
 )
 
