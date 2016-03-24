@@ -4,6 +4,7 @@ import (
 	"time"
   "fmt"
   "math"
+	"errors"
 )
 
 type DateAgoValues int
@@ -18,7 +19,51 @@ const (
     YearsAgo
 )
 
-func TimeAgo(start time.Time, end time.Time) string {
+func TimeAgoFromNow(args ...interface{}) (string, error) {
+	if len(args) == 1 {
+		return timeAgoFromNowWithTime(args[0])
+	} else {
+		return timeAgoFromNowWithString(args[0], args[1])
+	}
+}
+
+func timeAgoFromNowWithTime(end interface{}) (string, error) {
+	param, ok := end.(time.Time)
+	if ok {
+		result := TimeAgo(time.Now(), param)
+		return result, nil
+	} else {
+		err := errors.New("Invalid parameter type: end")
+		return "", err
+	}
+}
+
+func timeAgoFromNowWithString(
+	layout interface{}, end interface{}) (string, error) {
+
+	paramLayout, ok := layout.(string)
+	if ! ok{
+		err := errors.New("Invalid parameter type: layout")
+		return "", err
+	}
+
+	paramEnd, ok := end.(string)
+	if ! ok{
+		err := errors.New("Invalid parameter type: end")
+		return "", err
+	}
+
+	t, e := time.Parse(paramLayout, paramEnd)
+	if e == nil {
+		result := TimeAgo(time.Now(), t)
+		return result, nil
+	} else {
+		err := errors.New("Invalid format")
+		return "", err
+	}
+}
+
+func TimeAgo(start, end time.Time) string {
 
   duration := start.Sub(end)
 

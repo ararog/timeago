@@ -49,3 +49,29 @@ func TestJustNow(t *testing.T) {
     check(t, d, "Just now")
   }
 }
+
+func TestFromNow(t *testing.T) {
+	d, error := time.ParseDuration("-1.2m")
+	if error == nil {
+		end := time.Now().Add(d)
+		got, err := TimeAgoFromNow(end)
+		if err == nil {
+			if got != "A minute ago" {
+				t.Errorf("Wrong result: %s", got)
+			}
+		}
+	}
+}
+
+func TestFromNowWithString(t *testing.T) {
+	d, error := time.ParseDuration("-1.2m")
+	if error == nil {
+		end := time.Now().Add(d)
+		got, err := TimeAgoFromNow(time.RFC3339, end.Format(time.RFC3339))
+		if err == nil {
+			if got != "A minute ago" {
+				t.Errorf("Wrong result: %s", got)
+			}
+		}
+	}
+}
