@@ -1,3 +1,5 @@
+// Package time provides a set of functions to return how much
+// time has been passed between two dates.
 package timeago
 
 import (
@@ -19,13 +21,19 @@ const (
     YearsAgo
 )
 
+// TimeAgoFromNowWithTime takes a specific end Time value
+// and the current Time to return how much has been passed
+// between them.
 func TimeAgoFromNowWithTime(end time.Time) (string, error) {
 
 	return TimeAgoWithTime(time.Now(), end)
 }
 
-func TimeAgoFromNowWithString(
-	layout, end string) (string, error) {
+// TimeAgoFromNowWithTime takes a specific layout as time
+// format to parse the time string on end paramter to return
+// how much time has been passed between the current time and
+// the string representation of the time provided by user.
+func TimeAgoFromNowWithString(layout, end string) (string, error) {
 
 	t, e := time.Parse(layout, end)
 	if e == nil {
@@ -36,11 +44,16 @@ func TimeAgoFromNowWithString(
 	}
 }
 
+// TimeAgoWithTime takes a specific start/end Time values
+// and calculate how much time has been passed between them.
 func TimeAgoWithTime(start, end time.Time) (string, error) {
 	duration := start.Sub(end)
 	return stringForDuration(duration), nil
 }
 
+// TimeAgoWithString takes a specific layout as time
+// format to parse the time string on start/end parameter to return
+// how much time has been passed between them.
 func TimeAgoWithString(layout, start, end string) (string, error) {
 
 	timeStart, e := time.Parse(layout, start)
