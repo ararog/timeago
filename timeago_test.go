@@ -9,7 +9,7 @@ import "testing"
 func check(t *testing.T, d time.Duration, result string) {
   start := time.Now()
   end := time.Now().Add(d)
-  got, error := TimeAgo(start, end)
+  got, error := TimeAgoWithTime(start, end)
 	if error == nil {
 	  if got != result {
 	    t.Errorf("Wrong result: %s", got)
@@ -56,7 +56,7 @@ func TestFromNow(t *testing.T) {
 	d, error := time.ParseDuration("-1.2m")
 	if error == nil {
 		end := time.Now().Add(d)
-		got, err := TimeAgoFromNow(end)
+		got, err := TimeAgoFromNowWithTime(end)
 		if err == nil {
 			if got != "A minute ago" {
 				t.Errorf("Wrong result: %s", got)
@@ -69,7 +69,7 @@ func TestFromNowWithString(t *testing.T) {
 	d, error := time.ParseDuration("-1.2m")
 	if error == nil {
 		end := time.Now().Add(d)
-		got, err := TimeAgoFromNow(time.RFC3339, end.Format(time.RFC3339))
+		got, err := TimeAgoFromNowWithString(time.RFC3339, end.Format(time.RFC3339))
 		if err == nil {
 			if got != "A minute ago" {
 				t.Errorf("Wrong result: %s", got)

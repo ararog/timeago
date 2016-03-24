@@ -19,90 +19,29 @@ const (
     YearsAgo
 )
 
-func TimeAgoFromNow(args ...interface{}) (string, error) {
-	if len(args) == 1 {
-		param, ok := args[0].(time.Time)
-		if ! ok {
-			return "", errors.New("Invalid parameter type: end")
-		}
-		return timeAgoFromNowWithTime(param)
-	} else if len(args) == 2 {
-		paramLayout, ok := args[0].(string)
-		if ! ok{
-			err := errors.New("Invalid parameter type: layout")
-			return "", err
-		}
+func TimeAgoFromNowWithTime(end time.Time) (string, error) {
 
-		paramEnd, ok := args[1].(string)
-		if ! ok{
-			err := errors.New("Invalid parameter type: end")
-			return "", err
-		}
-		return timeAgoFromNowWithString(paramLayout, paramEnd)
-	} else {
-		return "", errors.New("Invalid number of arguments")
-	}
+	return TimeAgoWithTime(time.Now(), end)
 }
 
-func timeAgoFromNowWithTime(end time.Time) (string, error) {
-
-	return TimeAgo(time.Now(), end)
-}
-
-func timeAgoFromNowWithString(
+func TimeAgoFromNowWithString(
 	layout, end string) (string, error) {
 
 	t, e := time.Parse(layout, end)
 	if e == nil {
-		return TimeAgo(time.Now(), t)
+		return TimeAgoWithTime(time.Now(), t)
 	} else {
 		err := errors.New("Invalid format")
 		return "", err
 	}
 }
 
-func TimeAgo(args ...interface{}) (string, error) {
-
-	if len(args) == 2 {
-		paramStart, ok := args[0].(time.Time)
-		if ! ok {
-			return "", errors.New("Invalid parameter type: start")
-		}
-
-		paramEnd, ok := args[1].(time.Time)
-		if ! ok {
-			return "", errors.New("Invalid parameter type: end")
-		}
-		return timeAgoWithTime(paramStart, paramEnd)
-	} else if len(args) == 3 {
-		paramLayout, ok := args[0].(string)
-		if ! ok{
-			err := errors.New("Invalid parameter type: layout")
-			return "", err
-		}
-
-		paramStart, ok := args[1].(string)
-		if ! ok{
-			err := errors.New("Invalid parameter type: start")
-			return "", err
-		}
-
-		paramEnd, ok := args[2].(string)
-		if ! ok {
-			return "", errors.New("Invalid parameter type: end")
-		}
-		return timeAgoWithString(paramLayout, paramStart, paramEnd)
-	} else {
-		return "", errors.New("Invalid number of arguments")
-	}
-}
-
-func timeAgoWithTime(start, end time.Time) (string, error) {
+func TimeAgoWithTime(start, end time.Time) (string, error) {
 	duration := start.Sub(end)
 	return stringForDuration(duration), nil
 }
 
-func timeAgoWithString(layout, start, end string) (string, error) {
+func TimeAgoWithString(layout, start, end string) (string, error) {
 
 	timeStart, e := time.Parse(layout, start)
 	if e != nil {
